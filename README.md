@@ -44,5 +44,9 @@ demo: python3 genome_annotation_pipe.py -n Apiotrichum_mycotoxinovorans -g Am_ge
 Replace `taxonkit` with `ETE Toolkit`.  
 [ETE](http://etetoolkit.org/) is a Python programming toolkit that assists in the
  automated manipulation, analysis and visualization of phylogenetic trees.
+ 
+### To Do List
+1. Build a smaller fungal specific lineages dataset derived from BUSCO.
+2. Find or make a better software to replace Maker. It is too heavy.
 
 **Feel free to contact me or contribute to this open-source project to make it better!**
