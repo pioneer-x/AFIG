@@ -3,7 +3,8 @@
 # To get the lineage by name using taxonkit for busco chosing
 
 import argparse
-import os
+
+from ete3 import NCBITaxa
 
 
 def get_parser():
@@ -178,13 +179,11 @@ def taxonkitWrapper(taxon_name):
                   "vibrionales",
                   "viridiplantae",
                   "xanthomonadales"]
-    with open('name.tmp', 'w+') as namefile:
-        namefile.write(taxon_name)
-        namefile.close()
-    lineage = os.popen('cat name.tmp | taxonkit name2taxid | taxonkit lineage --taxid-field 2')
-    lineage = lineage.read().split(";")
-    for i in range(len(lineage)-1, -1, -1):
-        taxonclass = lineage[i].lower()
+    ncbi = NCBITaxa()
+    tax_id = ncbi.get_name_translator([taxon_name])[taxon_name][0]
+    lineage = ncbi.get_lineage(tax_id)
+    lineage_list = [taxname.lower() for taxname in ncbi.get_taxid_translator(lineage).values()]
+    for taxonclass in lineage_list[::-1]:
         if taxonclass in busco_list:
             return taxonclass
 
@@ -192,6 +191,6 @@ def taxonkitWrapper(taxon_name):
 if __name__ == '__main__':
     parser = get_parser()
     args = parser.parse_args()
-    spename = args.name.replace("_"," ")
+    spename = args.name.replace("_", " ")
     taxonname = taxonkitWrapper(spename)
     print(taxonname)

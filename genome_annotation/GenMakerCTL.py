@@ -10,31 +10,31 @@ busco_db_path = "/database/busco_db/"
 # Server was down!
 busco_web_path = "http://202.119.249.49/busco/"
 
+
 def get_parser():
     parser = argparse.ArgumentParser(description='Get a busco taxon class and generate maker_opt file')
     # parser.parse_args()
-    parser.add_argument("-g", "--genome_file_name",default="genome.fasta")
-    parser.add_argument("-t", "--taxon_name",default="fungi")
-    parser.add_argument("-p", "--thread_num",default=4)
-
+    parser.add_argument("-g", "--genome_file_name", default="genome.fasta")
+    parser.add_argument("-t", "--taxon_name", default="fungi")
+    parser.add_argument("-p", "--thread_num", default=4)
 
     return parser
 
 
 def GenMaker_opt(taxonclass, threads):
-    buscodb = taxonclass+"_odb10.fasta"
+    buscodb = taxonclass + "_odb10.fasta"
     if busco_db_path == "":
-        #print("wget %s%s" %(busco_web_path,buscodb.lower()))
-        os.system("wget %s%s" %(busco_web_path,buscodb.lower()))
+        # print("wget %s%s" %(busco_web_path,buscodb.lower()))
+        os.system("wget %s%s" % (busco_web_path, buscodb.lower()))
     else:
-        cpcmd = "cp %s%s ./" %(busco_db_path,buscodb.lower())
+        cpcmd = "cp %s%s ./" % (busco_db_path, buscodb.lower())
         os.system(cpcmd)
 
     os.system("maker -CTL")
-    sedcmd = "sed -i 's/^genome=/genome=genome.fasta/g;s/^repeat_protein=\/pub\/software\/maker-3.01.03\/data\/te_proteins.fasta/repeat_protein= /g;s/^model_org=all/model_org=0/g;s/^softmask=1/softmask=0/g;s/^cpus=1/cpus=%s/g;s/^protein2genome=0/protein2genome=1/g;s/^protein= /protein=%s/g' maker_opts.ctl" %(threads, buscodb.lower())
+    sedcmd = "sed -i 's/^genome=/genome=genome.fasta/g;s/^repeat_protein=\/pub\/software\/maker-3.01.03\/data\/te_proteins.fasta/repeat_protein= /g;s/^model_org=all/model_org=0/g;s/^softmask=1/softmask=0/g;s/^cpus=1/cpus=%s/g;s/^protein2genome=0/protein2genome=1/g;s/^protein= /protein=%s/g' maker_opts.ctl" % (
+    threads, buscodb.lower())
     os.system(sedcmd)
     return "Modiffied maker_opt file successfully!"
-
 
 
 if __name__ == '__main__':
@@ -42,9 +42,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     taxonclass = args.taxon_name
     genomefilename = args.genome_file_name
-    os.system("cp %s genome.fasta" %(genomefilename))
+    os.system("cp %s genome.fasta" % (genomefilename))
     thread_num = str(args.thread_num)
-    #print(taxonclass,genomefilename)
-    GenMaker_opt(taxonclass,thread_num)
+    # print(taxonclass,genomefilename)
+    GenMaker_opt(taxonclass, thread_num)
 
-    #print(taxonkitWrapper(args.name.replace("_"," ")))
+    # print(taxonkitWrapper(args.name.replace("_"," ")))
