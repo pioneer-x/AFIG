@@ -41,6 +41,7 @@ def run_snap():
     snap_path = "/".join(snap_exe.split("/")[:-1]) + "/"
     perl_path = os.popen("which perl").read().replace("\n", "")
     # default snap_path set for genek user!
+    os.system("rm -rf snap")
     os.system("mkdir snap")
     os.chdir("snap")
     # in path/to/genome/snap_rnd1
@@ -107,11 +108,14 @@ def check_exe():
 def annotate(spename, genomefilename, thread_num):
     # in path/to/genome/
     taxonclass = GetLineage.taxonkitWrapper(spename)
+    os.system("rm -rf exonerate")
     os.system("mkdir exonerate")
     os.system("cp %s exonerate/genome.fasta" % (genomefilename))
     os.chdir("exonerate")
     # in path/to/genome/maker_rnd1
-    exonerate_parser.run_exonerate(taxonclass, genomefilename, thread_num)
+    exonerate_out = exonerate_parser.run_exonerate(taxonclass, genomefilename, thread_num)
+    zff_dict = exonerate_parser.parse_exonerate(exonerate_out)
+    exonerate_parser.write_zff(zff_dict)
 
     os.chdir("../")
     # in path/to/genome/

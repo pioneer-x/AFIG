@@ -11,18 +11,23 @@ def run_exonerate(taxonclass, genome, threads):
     import sys
     from joblib import Parallel, delayed
     script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
-    buscodb = os.path.join(script_path, taxonclass + "_odb10.fasta")
+    buscodb = os.path.join(script_path, "fungi_busco_sub" ,taxonclass + "_odb10.fasta")
     # jobfile = open("parallel_exon.sh", "w+")
     cmd_list = []
     for i in range(1, int(threads) + 1):
         cmd = "exonerate %s %s --querychunkid %s --querychunktotal %s --model protein2genome --showtargetgff yes --showvulgar no --showalignment no > %s.exon" %(buscodb, genome, str(i), str(threads), str(i))
         cmd_list.append(cmd)
         # jobfile.write((cmd))
-    Parallel(n_jobs=threads)(delayed(os.system)(cmd) for cmd in cmd_list)
+    print("==" * 20)
+    print("[INFO:] Running exonerate in protein2genome model.")
+    Parallel(n_jobs=int(threads))(delayed(os.system)(cmd) for cmd in cmd_list)
     dummycheck()
+    print("[INFO:] Done.")
+    print("==" * 20)
     os.system("rm dummy.txt")
     os.system("cat *.exon > exon.out")
     exonerate_out = open("exon.out").read().split("#")
+    return exonerate_out
 
 
 def parse_exonerate(exonerate_out):
@@ -40,10 +45,11 @@ def parse_exonerate(exonerate_out):
                 if line_list[2] == "gene":
                     sequence = ">" + line_list[0]
                     model = line_list[8].split(";")[1].split(" ")[2]
-            if sequence in zff_dict:
-                zff_dict[sequence].append(["Esngl ", start, end, model])
-            else:
-                zff_dict[sequence] = [["Esngl ", start, end, model]]
+                    identity = float(line_list[8].split(";")[3].split(" ")[2])
+            # if sequence in zff_dict:
+            #     zff_dict[sequence].append(["Esngl ", start, end, model, identity])
+            # else:
+            #     zff_dict[sequence] = [["Esngl ", start, end, model, identity]]
 
             # zff_list.append(["Esngl", start, end, model])
         else:
@@ -51,6 +57,7 @@ def parse_exonerate(exonerate_out):
                 line_list = line.split("\t")
                 if line_list[2] == "gene":
                     model = line_list[8].split(";")[1].split(" ")[2]
+                    identity = float(line_list[8].split(";")[3].split(" ")[2])
                     sequence = ">" + line_list[0]
                     gene_start, gene_end = line_list[3:5]
                 if int(gene_start) < int(gene_end):

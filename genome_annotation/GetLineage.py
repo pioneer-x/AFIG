@@ -48,6 +48,9 @@ def taxonkitWrapper(taxon_name):
     lineage_list = [taxname.lower() for taxname in ncbi.get_taxid_translator(lineage).values()]
     for taxonclass in lineage_list[::-1]:
         if taxonclass in busco_list:
+            print("==" * 20)
+            print("[INFO:] Found %s(taxid: %s) within %s lineage." %(taxon_name, str(tax_id), taxonclass))
+            print("==" * 20)
             return taxonclass
 
 
