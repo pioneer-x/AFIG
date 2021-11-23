@@ -7,7 +7,7 @@ import argparse
 import os
 import sys
 
-busco_db_path = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "fungi_busco_db")
+busco_db_path = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "fungi_busco_sub/")
 # Server was down!
 busco_web_path = "http://202.119.249.49/busco/"
 
@@ -29,6 +29,7 @@ def GenMaker_opt(taxonclass, threads):
         os.system("wget %s%s" % (busco_web_path, buscodb.lower()))
     else:
         cpcmd = "cp %s%s ./" % (busco_db_path, buscodb.lower())
+        print(cpcmd)
         os.system(cpcmd)
 
     os.system("maker -CTL")
