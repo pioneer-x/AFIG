@@ -8,6 +8,7 @@ def dummycheck():
 
 def run_exonerate(taxonclass, genome, threads):
     import os
+    import sys
     script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
     buscodb = os.path.join(script_path, taxonclass + "_odb10.fasta")
     # jobfile = open("parallel_exon.sh", "w+")
