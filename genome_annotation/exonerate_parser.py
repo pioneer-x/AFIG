@@ -46,10 +46,10 @@ def parse_exonerate(exonerate_out):
                     sequence = ">" + line_list[0]
                     model = line_list[8].split(";")[1].split(" ")[2]
                     identity = float(line_list[8].split(";")[3].split(" ")[2])
-            # if sequence in zff_dict:
-            #     zff_dict[sequence].append(["Esngl ", start, end, model, identity])
-            # else:
-            #     zff_dict[sequence] = [["Esngl ", start, end, model, identity]]
+            if sequence in zff_dict:
+                zff_dict[sequence].append(["Esngl ", start, end, model, identity])
+            else:
+                zff_dict[sequence] = [["Esngl ", start, end, model, identity]]
 
             # zff_list.append(["Esngl", start, end, model])
         else:

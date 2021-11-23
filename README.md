@@ -12,7 +12,6 @@ This script will also configure a bash script for further antiSMASH analysis.
 Maker v3.01
 snap
 e2e
-A BUSCO database (One may need to build it you self because of license issues.)
 ```
 
 
@@ -53,7 +52,6 @@ Replace `taxonkit` with `ETE Toolkit`.
  automated manipulation, analysis and visualization of phylogenetic trees.
  
 ### To Do List
-1. Build a smaller fungal specific lineages dataset derived from BUSCO.
-2. Find or make a better software to replace Maker. It is too heavy.
+1. Find or make a better software to replace Maker. It is too heavy.
 
 **Feel free to contact me or contribute to this open-source project to make it better!**

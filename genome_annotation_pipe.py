@@ -27,23 +27,21 @@ def dummycheck():
     dummy.close()
 
 
-
-def run_snap4exon():
+def run_snap(engine):
     snap_exe = os.popen("which snap").read().replace("\n", "")
     snap_path = "/".join(snap_exe.split("/")[:-1]) + "/"
     perl_path = os.popen("which perl").read().replace("\n", "")
-    # default snap_path set for genek user!
+
     os.system("rm -rf snap")
     os.system("mkdir snap")
     os.chdir("snap")
     # in path/to/genome/snap_rnd1
-    os.system("mkdir training")
-    os.system("cp ../exonerate/genome.fasta training/genome.dna")
-    os.system("cp ../exonerate/genome.ann training/")
+    os.mkdir("training")
+    os.system("cp ../" + engine + "/genome.fasta training/genome.dna")
+    os.system("cp ../" + engine + "/genome.ann training/")
 
-    os.system("cp ../genome.fasta training")
-    os.system("mkdir prediction")
-    os.system("cp ../genome.fasta prediction")
+    os.mkdir("prediction")
+    os.system("cp ../" + engine + "/genome.fasta prediction/genome.dna")
     os.chdir("training")
     # os.system("maker2zff -n -d ../../maker_rnd1/genome.maker.output/genome_master_datastore_index.log")
     os.system(snap_path + "fathom genome.ann genome.dna -gene-stats ")
@@ -60,7 +58,7 @@ def run_snap4exon():
     os.chdir("../prediction")
     os.system(
         snap_exe + " -aa genome.snap.protein.fasta -tx genome.snap.transcripts.fasta -name snap genome.hmm genome.fasta -gff > genome.snap.gff")
-    return "This round of SNAP finished!"
+
 
 
 def GetCDSgff():
@@ -108,7 +106,7 @@ def exon_annotate(spename, genomefilename, thread_num):
         exonerate_out = exonerate_parser.run_exonerate(taxonclass, genomefilename, thread_num)
         zff_dict = exonerate_parser.parse_exonerate(exonerate_out)
         exonerate_parser.write_zff(zff_dict)
-        run_snap4exon()
+        run_snap("exonerate")
     except FileExistsError:
         if os.path.isfile("exonerate/exon.out"):
             os.chdir("exonerate")
@@ -119,7 +117,7 @@ def exon_annotate(spename, genomefilename, thread_num):
             zff_dict = exonerate_parser.parse_exonerate(exonerate_out)
             exonerate_parser.write_zff(zff_dict)
             os.chdir("../")
-            run_snap4exon()
+            run_snap("exonerate")
         else:
             os.system("cp %s exonerate/genome.fasta" % (genomefilename))
             os.chdir("exonerate")
@@ -134,59 +132,55 @@ def exon_annotate(spename, genomefilename, thread_num):
 
             os.chdir("../")
             # in path/to/genome/
-            run_snap4exon()
+            run_snap("exonerate")
 
 def maker_annotate(spename, genomefilename, thread_num):
 
-    def run_snap4maker():
-        # snap_path="/pub/software/maker-2.31.10/exe/snap/", perl_path="/pub/perl/bin/perl"
-        snap_exe = os.popen("which snap").read().replace("\n", "")
-        snap_path = "/".join(snap_exe.split("/")[:-1]) + "/"
-        perl_path = os.popen("which perl").read().replace("\n", "")
-    # default snap_path set for genek user!
-        os.system("mkdir snap_rnd1")
-        os.chdir("snap_rnd1")
-        # in path/to/genome/snap_rnd1
-        os.system("cp ../maker_rnd1/genome.fasta ./")
-        os.system("mkdir training")
-        os.system("cp genome.fasta training")
-        os.system("mkdir prediction")
-        os.system("cp genome.fasta prediction")
-        os.chdir("training")
-        os.system("maker2zff -n -d ../../maker_rnd1/genome.maker.output/genome_master_datastore_index.log")
-        os.system(snap_path + "fathom genome.ann genome.dna -gene-stats ")
-        os.system(snap_path + "fathom genome.ann genome.dna -validate")
-        os.system(snap_path + "fathom genome.ann genome.dna -categorize 1000")
-        os.system(snap_path + "fathom uni.ann uni.dna -export 1000 -plus")
-        os.system("mkdir params")
-        os.chdir("params")
-        os.system("/pub/software/maker-2.31.10/exe/snap/forge ../export.ann ../export.dna")
-        os.chdir("..")
-        os.system(
-            perl_path + " " + snap_path + "hmm-assembler.pl genome.fasta params > genome.hmm")
-        os.system("cp genome.hmm ../prediction")
-        os.chdir("../prediction")
-        os.system(
-            snap_path + "snap -aa genome.snap.rnd1.protein.fasta -tx genome.snap.rnd1.transcripts.fasta -name snap genome.hmm genome.fasta -gff > genome.snap.rnd1.gff")
-        return "This round of SNAP finished!"
 
     # in path/to/genome/
     taxonclass = GetLineage.taxonWrapper(spename)
-    os.system("mkdir maker_rnd1")
-    os.system("cp %s maker_rnd1/genome.fasta" % (genomefilename))
-    os.chdir("maker_rnd1")
-    # in path/to/genome/maker_rnd1
-    GenMakerCTL.GenMaker_opt(taxonclass, thread_num)
-    # MPI not supportted
-    # os.system("mpiexec -n %s maker" % (thread_num))
-    os.system("maker")
-    os.chdir("genome.maker.output")
-    # in path/to/genome/maker_rnd1/genome.maker.output/
-    os.system("gff3_merge -s -d genome_master_datastore_index.log > genome_rnd1.busco.maker.gff")
-    os.system("fasta_merge -d genome_master_datastore_index.log")
-    os.chdir("../../")
-    # in path/to/genome/
-    run_snap4maker()
+    try:
+        os.mkdir("maker")
+        os.system("cp %s maker/genome.fasta" % (genomefilename))
+        os.chdir("maker")
+        # in path/to/genome/maker_rnd1
+        GenMakerCTL.GenMaker_opt(taxonclass, thread_num)
+        # MPI not supportted
+        # os.system("mpiexec -n %s maker" % (thread_num))
+        os.system("maker")
+        os.chdir("genome.maker.output")
+        # in path/to/genome/maker_rnd1/genome.maker.output/
+        os.system("gff3_merge -s -d genome_master_datastore_index.log > genome.busco.maker.gff")
+        os.system("fasta_merge -d genome_master_datastore_index.log")
+        os.chdir("..")
+        os.system("maker2zff -n -d genome.maker.output/genome_master_datastore_index.log")
+        os.chdir("..")
+        # in path/to/genome/
+        run_snap("maker")
+    except FileExistsError:
+        if os.path.isfile("maker/genome.ann"):
+            run_snap("maker")
+        else:
+            os.system("rm -rf maker")
+            os.mkdir("maker")
+            os.system("cp %s maker/genome.fasta" % (genomefilename))
+            os.chdir("maker")
+            # in path/to/genome/maker_rnd1
+            GenMakerCTL.GenMaker_opt(taxonclass, thread_num)
+            # MPI not supportted
+            # os.system("mpiexec -n %s maker" % (thread_num))
+            os.system("maker")
+            os.chdir("genome.maker.output")
+            # in path/to/genome/maker_rnd1/genome.maker.output/
+            os.system("gff3_merge -s -d genome_master_datastore_index.log > genome.busco.maker.gff")
+            os.system("fasta_merge -d genome_master_datastore_index.log")
+            os.chdir("..")
+            os.system("maker2zff -n -d genome.maker.output/genome_master_datastore_index.log")
+            os.chdir("..")
+            # in path/to/genome/
+            run_snap("maker")
+
+    # return
 
 
 if __name__ == '__main__':
