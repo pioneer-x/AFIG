@@ -5,8 +5,9 @@
 
 import argparse
 import os
+import sys
 
-busco_db_path = "/database/busco_db/"
+busco_db_path = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "fungi_busco_db")
 # Server was down!
 busco_web_path = "http://202.119.249.49/busco/"
 
@@ -47,4 +48,4 @@ if __name__ == '__main__':
     # print(taxonclass,genomefilename)
     GenMaker_opt(taxonclass, thread_num)
 
-    # print(taxonkitWrapper(args.name.replace("_"," ")))
+

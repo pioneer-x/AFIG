@@ -14,7 +14,7 @@ def get_parser():
     return parser
 
 
-def taxonkitWrapper(taxon_name):
+def taxonWrapper(taxon_name):
 
     busco_list = [
         "agaricales",
@@ -58,5 +58,5 @@ if __name__ == '__main__':
     parser = get_parser()
     args = parser.parse_args()
     spename = args.name.replace("_", " ")
-    taxonname = taxonkitWrapper(spename)
+    taxonname = taxonWrapper(spename)
     print(taxonname)
