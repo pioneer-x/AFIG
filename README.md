@@ -1,9 +1,8 @@
 # AFIG v0.1.0
 Using BUSCO Lineage data to train HMM model and annotate fungi genome.  
-By using taxonkit to identify the lineage of your fungi genome. This script will automatically find a busco dataset 
-and map conserved ancestral proteins to this genome. SNAP will be used to train a species-specific HMM to annotate y
-our genome. 
-This script will also configure a bash script for further antiSMASH analysis.
+By using e2e to identify the lineage of your fungi genome. This script will automatically find a busco dataset 
+and map conserved ancestral proteins to this genome. SNAP will be used to train a species-specific HMM to annotate your genome. 
+This pipeline will also configure a bash script for further antiSMASH analysis.
 
 
 ### Requirements
@@ -55,5 +54,7 @@ Replace `taxonkit` with `ETE Toolkit`.
 ### To Do List
 1. Build a smaller fungal specific lineages dataset derived from BUSCO.
 2. Find or make a better software to replace Maker. It is too heavy.
+
+### For further functional annotation and visulation, refer to [CMPP](https://github.com/JinyuanSun/CMPP).
 
 **Feel free to contact me or contribute to this open-source project to make it better!**
