@@ -32,8 +32,9 @@ def run_exonerate(taxonclass, genome, threads):
 
 def parse_exonerate(exonerate_out):
     zff_dict = {}
+    gene_num = 0
     for i in range(15, len(exonerate_out)+1, 17):
-
+        gene_num += 1
         gene_block = exonerate_out[i].split("\n")[1:-1]
         # print(exonerate_out[15])
         if len(gene_block) == 4:
@@ -44,7 +45,7 @@ def parse_exonerate(exonerate_out):
                     start, end = line_list[3:5]
                 if line_list[2] == "gene":
                     sequence = ">" + line_list[0]
-                    model = line_list[8].split(";")[1].split(" ")[2]
+                    model = line_list[8].split(";")[1].split(" ")[2] + "_" + str(i)
                     identity = float(line_list[8].split(";")[3].split(" ")[2])
             if sequence in zff_dict:
                 zff_dict[sequence].append(["Esngl ", start, end, model, identity])
@@ -56,7 +57,7 @@ def parse_exonerate(exonerate_out):
             for line in gene_block:
                 line_list = line.split("\t")
                 if line_list[2] == "gene":
-                    model = line_list[8].split(";")[1].split(" ")[2]
+                    model = line_list[8].split(";")[1].split(" ")[2] + "_" + str(i)
                     identity = float(line_list[8].split(";")[3].split(" ")[2])
                     sequence = ">" + line_list[0]
                     gene_start, gene_end = line_list[3:5]
