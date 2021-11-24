@@ -41,7 +41,7 @@ def run_snap(engine):
     os.system("cp ../" + engine + "/genome.ann training/")
 
     os.mkdir("prediction")
-    os.system("cp ../" + engine + "/genome.fasta prediction/genome.dna")
+    os.system("cp ../" + engine + "/genome.fasta prediction/genome.fasta")
     os.chdir("training")
     # os.system("maker2zff -n -d ../../maker_rnd1/genome.maker.output/genome_master_datastore_index.log")
     os.system(snap_path + "fathom genome.ann genome.dna -gene-stats ")
